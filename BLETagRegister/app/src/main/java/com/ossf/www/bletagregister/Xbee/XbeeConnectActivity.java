@@ -1,22 +1,25 @@
 package com.ossf.www.bletagregister.Xbee;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.ossf.www.bletagregister.R;
+import com.ossf.www.bletagregister.Xbee.managers.XBeeManager;
 
 public class XbeeConnectActivity extends AppCompatActivity {
 
     private boolean connecting = false;
-    private XBeeDevice myXBeeDevice = null;
+    private XBeeManager xbeeManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xbee_connect);
+
+        xbeeManager = new XBeeManager(this);
     }
 
     @Override
@@ -28,8 +31,7 @@ public class XbeeConnectActivity extends AppCompatActivity {
             return;
 
         // Instantiate the XBeeDevice object.
-        if (myXBeeDevice == null)
-            myXBeeDevice = new XBeeDevice(this, 9600);
+        xbeeManager.createXBeeDevice(XBeeConstants.BAUDRATE);
 
         // Create the connection thread.
         Thread connectThread = new Thread(new Runnable() {
@@ -37,12 +39,9 @@ public class XbeeConnectActivity extends AppCompatActivity {
             public void run() {
                 connecting = true;
                 try {
-                    // Check connection status.
-                    if (myXBeeDevice.isOpen())
-                        myXBeeDevice.close();
                     // Open device connection
-                    myXBeeDevice.open();
-                    showToastMessage("Device open: " + myXBeeDevice.toString());
+                    xbeeManager.openConnection();
+                    showToastMessage("Device open: " + xbeeManager.getLocalXBeeDevice().toString());
                 } catch (XBeeException e) {
                     showToastMessage("Could not open device: " + e.getMessage());
                 }
@@ -50,6 +49,7 @@ public class XbeeConnectActivity extends AppCompatActivity {
             }
         });
         connectThread.start();
+
     }
 
     /**
