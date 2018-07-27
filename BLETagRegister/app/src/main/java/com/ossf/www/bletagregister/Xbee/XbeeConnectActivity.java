@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.ossf.www.bletagregister.HomeActivity;
 import com.ossf.www.bletagregister.R;
 import com.ossf.www.bletagregister.Xbee.managers.XBeeManager;
 
@@ -19,7 +20,7 @@ public class XbeeConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xbee_connect);
 
-        xbeeManager = new XBeeManager(this);
+        xbeeManager = HomeActivity.getInstance().getXBeeManager();
     }
 
     @Override
