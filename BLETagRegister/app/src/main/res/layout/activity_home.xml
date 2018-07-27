@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ossf.www.bletagregister.HomeActivity">
+
+    <Button
+        android:id="@+id/AddBLEButton"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Add BLE"
+        android:onClick="onAddBLE"/>
+
+    <Button
+        android:id="@+id/ConnectXbeeButton"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/AddBLEButton"
+        android:text="Connect Xbee"
+        android:onClick="onConnectXbee"/>
+
+</RelativeLayout>

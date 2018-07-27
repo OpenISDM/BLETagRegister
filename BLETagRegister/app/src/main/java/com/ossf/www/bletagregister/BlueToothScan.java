@@ -94,6 +94,7 @@ public class BlueToothScan extends AppCompatActivity {
         });
         stopScanningButton.setVisibility(View.INVISIBLE);
 
+
         btManager = (BluetoothManager)getSystemService(Context.BLUETOOTH_SERVICE);
         btAdapter = btManager.getAdapter();
         btScanner = btAdapter.getBluetoothLeScanner();

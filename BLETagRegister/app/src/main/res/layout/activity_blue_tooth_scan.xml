@@ -37,7 +37,9 @@
         android:id="@+id/PeripheralListView"
         android:layout_below="@+id/StartScanButton"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="50dp" />
+        android:layout_marginTop="50dp" >
+
+    </ListView>
 
 
 </RelativeLayout>
