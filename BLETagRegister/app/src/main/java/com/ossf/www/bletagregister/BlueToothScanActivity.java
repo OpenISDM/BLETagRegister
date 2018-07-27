@@ -24,7 +24,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -33,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BlueToothScan extends AppCompatActivity {
+public class BlueToothScanActivity extends AppCompatActivity {
 
     BluetoothManager btManager;
     BluetoothAdapter btAdapter;
@@ -143,7 +142,7 @@ public class BlueToothScan extends AppCompatActivity {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
             // this will get called anytime you perform a read or write characteristic operation
-            BlueToothScan.this.runOnUiThread(new Runnable() {
+            BlueToothScanActivity.this.runOnUiThread(new Runnable() {
                 public void run() {
                     peripheralTextView.setText("device read or wrote to\n");
                 }
@@ -156,14 +155,14 @@ public class BlueToothScan extends AppCompatActivity {
             System.out.println(newState);
             switch (newState) {
                 case 0:
-                    BlueToothScan.this.runOnUiThread(new Runnable() {
+                    BlueToothScanActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
                             peripheralTextView.setText("device disconnected\n");
                         }
                     });
                     break;
                 case 2:
-                    BlueToothScan.this.runOnUiThread(new Runnable() {
+                    BlueToothScanActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
                             peripheralTextView.setText("device connected\n");
                         }
@@ -174,7 +173,7 @@ public class BlueToothScan extends AppCompatActivity {
 
                     break;
                 default:
-                    BlueToothScan.this.runOnUiThread(new Runnable() {
+                    BlueToothScanActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
                             peripheralTextView.setText("we encounterned an unknown state, uh oh\n");
                         }
@@ -185,7 +184,7 @@ public class BlueToothScan extends AppCompatActivity {
 
         @Override
         public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
-            BlueToothScan.this.runOnUiThread(new Runnable() {
+            BlueToothScanActivity.this.runOnUiThread(new Runnable() {
                 public void run() {
                     peripheralTextView.setText("device services have been discovered\n");
                 }
@@ -283,7 +282,7 @@ public class BlueToothScan extends AppCompatActivity {
 
             final String uuid = gattService.getUuid().toString();
             System.out.println("Service discovered: " + uuid);
-            BlueToothScan.this.runOnUiThread(new Runnable() {
+            BlueToothScanActivity.this.runOnUiThread(new Runnable() {
                 public void run() {
                     peripheralTextView.setText("Service disovered: "+uuid+"\n");
                 }
@@ -298,7 +297,7 @@ public class BlueToothScan extends AppCompatActivity {
 
                 final String charUuid = gattCharacteristic.getUuid().toString();
                 System.out.println("Characteristic discovered for service: " + charUuid);
-                BlueToothScan.this.runOnUiThread(new Runnable() {
+                BlueToothScanActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
                         peripheralTextView.setText("Characteristic discovered for service: "+charUuid+"\n");
                     }

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
-    tools:context="com.ossf.www.bletagregister.BlueToothScan">
+    tools:context="com.ossf.www.bletagregister.BlueToothScanActivity">
 
     <Button
         android:layout_width="100dp"

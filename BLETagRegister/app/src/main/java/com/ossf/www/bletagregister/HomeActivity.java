@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.ossf.www.bletagregister.Xbee.XbeeConnectActivity;
+
 public class HomeActivity extends AppCompatActivity {
 
     @Override
@@ -14,12 +16,12 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void onAddBLE(View view) {
-        Intent intent = new Intent(this, BlueToothScan.class);
+        Intent intent = new Intent(this, BlueToothScanActivity.class);
         startActivity(intent);
     }
 
     public void onConnectXbee(View view) {
-
-
+        Intent intent = new Intent(this, XbeeConnectActivity.class);
+        startActivity(intent);
     }
 }
