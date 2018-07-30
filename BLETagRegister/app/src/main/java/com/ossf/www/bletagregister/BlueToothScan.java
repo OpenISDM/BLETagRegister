@@ -22,13 +22,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +52,7 @@ public class BlueToothScan extends AppCompatActivity {
     ListView peripheralListView;
     private final static int REQUEST_ENABLE_BT = 1;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
-
+    public static FileOutputStream fos;
     Boolean btScanning = false;
     int deviceIndex = 0;
     ArrayList<BluetoothDevice> devicesDiscovered = new ArrayList<BluetoothDevice>();
@@ -74,7 +82,23 @@ public class BlueToothScan extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blue_tooth_scan);
 
+        try {
+            File f = new File("mac2name.txt");
+            if(!f.exists()) {
+                f.createNewFile();
+            }
+            fos = new FileOutputStream("mac2name.txt", true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         peripheralListView=(ListView)findViewById(R.id.PeripheralListView);
+        peripheralListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                new EditNameDialog(BlueToothScan.this,adapterView.getItemAtPosition(i).toString().substring(5, 22)).show();
+            }
+        });
+
         mNewDevicesArrayAdapter= new ArrayAdapter<String>(this,android.R.layout.simple_expandable_list_item_1);
         peripheralListView.setAdapter(mNewDevicesArrayAdapter);
         peripheralTextView = (TextView) findViewById(R.id.PeripheralTextView);
@@ -126,7 +150,7 @@ public class BlueToothScan extends AppCompatActivity {
             int rssi=result.getRssi();
             String mac=result.getDevice().getAddress();
             Log.v("apple","name="+result.getDevice().getName()+" "+result.getDevice().getAddress());
-            if(deviceInfo.get(mac)==null || deviceInfo.get(mac)<rssi) {
+            if(deviceInfo.get(mac)==null || rssi>deviceInfo.get(mac)) {
                 deviceInfo.put(mac,rssi);
             }
             //mNewDevicesArrayAdapter.add("MAC: " + result.getDevice().getAddress() + " rssi: " + result.getRssi() + "\n");
@@ -247,12 +271,12 @@ public class BlueToothScan extends AppCompatActivity {
             }
         });
 
-        mHandler.postDelayed(new Runnable() {
+        /*mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 stopScanning();
             }
-        }, SCAN_PERIOD);
+        }, SCAN_PERIOD);*/
     }
 
     public void stopScanning() {
@@ -260,8 +284,11 @@ public class BlueToothScan extends AppCompatActivity {
         peripheralTextView.setText("Stopped Scanning\n");
         btScanning = false;
         mNewDevicesArrayAdapter.clear();
-        for(String mac: deviceInfo.keySet()) {
-            mNewDevicesArrayAdapter.add("MAC: " + mac+ " rssi: " + deviceInfo.get(mac));
+        //sort deviceInfo and print
+        List<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String,Integer>>(deviceInfo.entrySet());
+        Collections.sort(list,valueComparator);
+        for (Map.Entry<String, Integer> entry : list) {
+            mNewDevicesArrayAdapter.add("MAC: "+entry.getKey() + " rssi: " + entry.getValue());
         }
         deviceInfo.clear();
         startScanningButton.setVisibility(View.VISIBLE);
@@ -273,6 +300,14 @@ public class BlueToothScan extends AppCompatActivity {
             }
         });
     }
+
+    Comparator<Map.Entry<String, Integer>> valueComparator = new Comparator<Map.Entry<String,Integer>>() {
+        @Override
+        public int compare(Map.Entry<String, Integer> o1,Map.Entry<String, Integer> o2) {
+            return o2.getValue()-o1.getValue();
+        }
+    };
+
 
     private void displayGattServices(List<BluetoothGattService> gattServices) {
         if (gattServices == null) return;
