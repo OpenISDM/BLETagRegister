@@ -12,7 +12,7 @@ import android.widget.TextView;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-import static com.ossf.www.bletagregister.BlueToothScan.fos;
+import static com.ossf.www.bletagregister.BlueToothScanActivity.fos;
 
 public class EditNameDialog extends Dialog{
     private TextView tv_mac;
