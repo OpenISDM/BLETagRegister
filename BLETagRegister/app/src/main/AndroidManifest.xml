@@ -11,13 +11,13 @@
         android:required="true" />
 
     <application
+        android:name=".BLETagRegisterApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".BLETagRegisterApplication">
+        android:theme="@style/AppTheme">
         <uses-library
             android:name="com.digi.android"
             android:required="false" />
@@ -29,8 +29,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".BlueToothScanActivity"></activity>
-        <activity android:name=".Xbee.XbeeConnectActivity"></activity>
+        <activity android:name=".BlueToothScanActivity" />
+        <activity android:name=".Xbee.XbeeConnectActivity" />
+        <activity android:name=".Xbee.XBeeReceivedPacketsActivity"></activity>
     </application>
 
 </manifest>
