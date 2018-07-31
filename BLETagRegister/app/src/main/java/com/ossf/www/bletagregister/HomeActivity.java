@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -31,6 +32,18 @@ public class HomeActivity extends AppCompatActivity {
         regDevice_list=new HashMap<String, BLEdevice>();
         // initiallize xml
         listview=(ListView)findViewById(R.id.lv_regDevice);
+        listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                DevicesArrayAdapter.notifyDataSetChanged();
+                if(!listview.isItemChecked(i)) {
+                    listview.setItemChecked(i,false);
+                }else{
+                    listview.setItemChecked(i,true);
+                }
+            }
+        });
         DevicesArrayAdapter= new ArrayAdapter<String>(this,android.R.layout.simple_list_item_multiple_choice);
         listview.setAdapter(DevicesArrayAdapter);
         // show list
