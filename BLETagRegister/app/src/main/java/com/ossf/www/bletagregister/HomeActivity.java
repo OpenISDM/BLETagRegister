@@ -21,23 +21,25 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
     public static Map<String, BLEdevice> regDevice_list;
-    ListView listview;
-    ArrayAdapter<String> DevicesArrayAdapter;
+    private ListView listview;
+    private static ArrayAdapter<String> DevicesArrayAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         requestPermission(); //權限要求
         regDevice_list=new HashMap<String, BLEdevice>();
+        // initiallize xml
         listview=(ListView)findViewById(R.id.lv_regDevice);
-        DevicesArrayAdapter= new ArrayAdapter<String>(this,android.R.layout.simple_expandable_list_item_1);
+        DevicesArrayAdapter= new ArrayAdapter<String>(this,android.R.layout.simple_list_item_multiple_choice);
         listview.setAdapter(DevicesArrayAdapter);
+        // show list
+        getRegList();
         listInitiallize();
     }
-
-    public void listInitiallize(){
+    // 將 ble.txt資料丟進regDevice_list裡面
+    public void getRegList(){
         regDevice_list.clear();
-        DevicesArrayAdapter.clear();
         FileStream fs;
         try {
             fs = new FileStream();
@@ -45,17 +47,22 @@ public class HomeActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    //list refresh
+    public static void listInitiallize(){
+        DevicesArrayAdapter.clear();
         for (Map.Entry<String, BLEdevice> entry : regDevice_list.entrySet()) {
             BLEdevice device=entry.getValue();
-            DevicesArrayAdapter.add("name: "+device.getRegName()+"\nMAC:"+device.getMac());
+            DevicesArrayAdapter.add("name: "+device.getRegName()+"\nMAC: "+device.getMac());
         }
     }
 
     public void requestPermission(){
+        // write external storage enaled
         if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
-        // Make sure we have access coarse location enabled, if not, prompt the user to enable it
+        //  access coarse location enabled
         if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("This app needs location access");

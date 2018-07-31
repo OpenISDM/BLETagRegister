@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.ossf.www.bletagregister.HomeActivity.regDevice_list;
+
 public class BlueToothScanActivity extends AppCompatActivity {
 
     BluetoothManager btManager;
@@ -131,11 +133,13 @@ public class BlueToothScanActivity extends AppCompatActivity {
             String mac=result.getDevice().getAddress();
             String name=result.getDevice().getName();
             BLEdevice device=deviceInfo.get(mac);
-            if(device==null){
-                BLEdevice newDev=new BLEdevice(name,mac,rssi);
-                deviceInfo.put(mac,newDev);
-            } else if( rssi> device.getRssi()) {
-                device.setRssi(rssi);
+            if(regDevice_list.get(mac)==null){ // if this mac is not registered
+                if(device==null){
+                    BLEdevice newDev=new BLEdevice(name,mac,rssi);
+                    deviceInfo.put(mac,newDev);
+                } else if( rssi> device.getRssi()) {
+                    device.setRssi(rssi);
+                }
             }
             //mNewDevicesArrayAdapter.add("MAC: " + result.getDevice().getAddress() + " rssi: " + result.getRssi() + "\n");
             //peripheralTextView.append("Index: " + deviceIndex + ", Device Name: " + result.getDevice().getName() + " rssi: " + result.getRssi() + "\n");
