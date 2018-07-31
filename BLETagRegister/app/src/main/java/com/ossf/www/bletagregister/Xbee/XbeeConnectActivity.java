@@ -7,9 +7,10 @@ import android.widget.Toast;
 
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.ossf.www.bletagregister.BLETagRegisterApplication;
-import com.ossf.www.bletagregister.HomeActivity;
 import com.ossf.www.bletagregister.R;
+import com.ossf.www.bletagregister.Xbee.internal.XBeeConstants;
 import com.ossf.www.bletagregister.Xbee.managers.XBeeManager;
+
 
 public class XbeeConnectActivity extends AppCompatActivity {
 
@@ -21,6 +22,7 @@ public class XbeeConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xbee_connect);
 
+        // Get Xbee manager
         xbeeManager = BLETagRegisterApplication.getInstance().getXBeeManager();
     }
 
@@ -41,9 +43,12 @@ public class XbeeConnectActivity extends AppCompatActivity {
             public void run() {
                 connecting = true;
                 try {
-                    // Open device connection
                     xbeeManager.openConnection();
+                    
+                    startActivity(new Intent(XbeeConnectActivity.this, XBeeReceivedPacketsActivity.class));
                     showToastMessage("Device open: " + xbeeManager.getLocalXBeeDevice().toString());
+                    finish();
+
                 } catch (XBeeException e) {
                     showToastMessage("Could not open device: " + e.getMessage());
                 }

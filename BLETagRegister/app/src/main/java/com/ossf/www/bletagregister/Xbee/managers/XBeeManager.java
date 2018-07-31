@@ -18,28 +18,17 @@ package com.ossf.www.bletagregister.Xbee.managers;
 
 import android.content.Context;
 
-import com.ossf.www.bletagregister.Xbee.XBeeConstants;
-import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
-import com.digi.xbee.api.listeners.IDiscoveryListener;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
 import com.digi.xbee.api.models.XBee64BitAddress;
-import com.digi.xbee.api.utils.ByteUtils;
-import com.digi.xbee.api.utils.HexUtils;
 
-import java.util.HashMap;
 
 public class XBeeManager {
 	
-	// Constants.
-	private final static String USB_HOST_API = "USB Host API";
-	
 	// Variables.
-	private String port;
-	
 	private int baudRate;
 	
 	private XBeeDevice localDevice;
@@ -64,20 +53,7 @@ public class XBeeManager {
 	 */
 	public void createXBeeDevice(int baudRate) {
 		this.baudRate = baudRate;
-		this.port = null;
 		localDevice = new XBeeDevice(context, baudRate);
-	}
-	
-	/**
-	 * Creates the local XBee Device using the given serial port and baud rate.
-	 * 
-	 * @param port Local serial port to use in the XBee Connection.
-	 * @param baudRate Baud rate to use in the XBee Connection.
-	 */
-	public void createXBeeDevice(String port, int baudRate) {
-		this.port = port;
-		this.baudRate = baudRate;
-		localDevice = new XBeeDevice(context, port, baudRate);
 	}
 	
 	/**
@@ -90,115 +66,12 @@ public class XBeeManager {
 	}
 	
 	/**
-	 * Returns the port used for the XBee device connection.
-	 * 
-	 * @return The port used for the XBee device connection.
-	 */
-	public String getSerialPort() {
-		return port;
-	}
-	
-	/**
 	 * Returns the baud rate used for the XBee device connection.
 	 * 
 	 * @return The baud rate used for the XBee device connection.
 	 */
 	public int getBaudRate() {
 		return baudRate;
-	}
-	
-	/**
-	 * Sets the given parameter to the given value in the local device.
-	 * 
-	 * @param parameter AT parameter to set.
-	 * @param value Value of the parameter.
-	 *
-	 * @throws XBeeException if there is a timeout or
-	 *                       any other error executing the request.
-	 */
-	public void setLocalParameter(String parameter, byte[] value) throws XBeeException {
-		localDevice.setParameter(parameter, value);
-	}
-	
-	/**
-	 * Reads the given parameter from the local device.
-	 * 
-	 * @param parameter AT parameter to read.
-	 * 
-	 * @return The value of the given parameter.
-	 *
-	 * @throws XBeeException if there is a timeout or
-	 *                       any other error executing the request.
-	 */
-	public String getLocalParameter(String parameter) throws XBeeException {
-		byte[] value = localDevice.getParameter(parameter);
-		return HexUtils.byteArrayToHexString(value);
-	}
-	
-	/**
-	 * Returns a map with the basic read parameters of the local device.
-	 * 
-	 * @return Map with the basic read parameters of the local device.
-	 * 
-	 * @throws XBeeException if there is a timeout
-	 */
-	public HashMap<String, String> readBasicLocalParameters() throws XBeeException {
-		localDevice.readDeviceInfo();
-		HashMap<String, String> readParams = new HashMap<String, String>();
-		readParams.put(XBeeConstants.PARAM_NODE_IDENTIFIER, localDevice.getNodeID());
-		readParams.put(XBeeConstants.PARAM_MAC_ADDRESS, localDevice.get64BitAddress().toString());
-		readParams.put(XBeeConstants.PARAM_FIRMWARE_VERSION, localDevice.getFirmwareVersion());
-		readParams.put(XBeeConstants.PARAM_HARDWARE_VERSION, localDevice.getHardwareVersion().toString());
-		readParams.put(XBeeConstants.PARAM_XBEE_PROTOCOL, localDevice.getXBeeProtocol().toString());
-		readParams.put(XBeeConstants.PARAM_PAN_ID, "" + HexUtils.byteArrayToHexString(localDevice.getPANID()));
-		readParams.put(XBeeConstants.PARAM_DEST_ADDRESS_H, HexUtils.byteArrayToHexString(localDevice.getParameter(XBeeConstants.AT_COMMAND_DH)));
-		readParams.put(XBeeConstants.PARAM_DEST_ADDRESS_L, HexUtils.byteArrayToHexString(localDevice.getParameter(XBeeConstants.AT_COMMAND_DL)));
-		byte[] ntValue = localDevice.getParameter(XBeeConstants.AT_COMMAND_NT);
-		long nodeDiscoveryTime = ByteUtils.byteArrayToLong(ntValue) * 100;
-		readParams.put(XBeeConstants.PARAM_NODE_DISCOVERY_TIME, "" + nodeDiscoveryTime);
-		byte[] irValue = localDevice.getParameter(XBeeConstants.AT_COMMAND_IR);
-		long samplingRateTime = ByteUtils.byteArrayToLong(irValue);
-		readParams.put(XBeeConstants.PARAM_IO_SAMPLING_RATE, "" + samplingRateTime);
-		if (port == null)
-			readParams.put(XBeeConstants.PARAM_SERIAL_PORT, USB_HOST_API);
-		else
-			readParams.put(XBeeConstants.PARAM_SERIAL_PORT, port);
-		readParams.put(XBeeConstants.PARAM_BAUD_RATE, "" + baudRate);
-		return readParams;
-	}
-	
-	/**
-	 * Returns a map with the basic read parameters of the given remote device.
-	 * 
-	 * @param remoteDevice Remote device to read its parameters.
-	 * 
-	 * @return Map with the basic read parameters of the local device.
-	 * 
-	 * @throws XBeeException if there is a timeout
-	 *                       or any other error executing the request.
-	 */
-	public HashMap<String, String> readBasicRemoteParameters(RemoteXBeeDevice remoteDevice) throws XBeeException {
-		remoteDevice.readDeviceInfo();
-		HashMap<String, String> readParams = new HashMap<String, String>();
-		readParams.put(XBeeConstants.PARAM_NODE_IDENTIFIER, remoteDevice.getNodeID());
-		readParams.put(XBeeConstants.PARAM_MAC_ADDRESS, remoteDevice.get64BitAddress().toString());
-		readParams.put(XBeeConstants.PARAM_FIRMWARE_VERSION, remoteDevice.getFirmwareVersion());
-		readParams.put(XBeeConstants.PARAM_HARDWARE_VERSION, remoteDevice.getHardwareVersion().toString());
-		readParams.put(XBeeConstants.PARAM_XBEE_PROTOCOL, remoteDevice.getXBeeProtocol().toString());
-		return readParams;
-	}
-	
-	/**
-	 * Sends the given data to the given remote device.
-	 * 
-	 * @param data Data to send.
-	 * @param remoteDevice Remote XBee device to send data to.
-	 * 
-	 * @throws XBeeException if there is a timeout or
-	 *                       any other error executing the request.
-	 */
-	public void sendDataToRemote(byte[] data, RemoteXBeeDevice remoteDevice) throws XBeeException {
-		localDevice.sendData(remoteDevice, data);
 	}
 	
 	/**
@@ -209,44 +82,7 @@ public class XBeeManager {
 	public XBee64BitAddress getLocalXBee64BitAddress() {
 		return localDevice.get64BitAddress();
 	}
-	
-	/**
-	 * Adds the given listener to the list of listeners that will be notified
-	 * on device discovery events.
-	 * 
-	 * @param listener Discovery listener to add.
-	 */
-	public void addDiscoveryListener(IDiscoveryListener listener) {
-		localDevice.getNetwork().addDiscoveryListener(listener);
-	}
-	
-	/**
-	 * Starts the device discovery process.
-	 */
-	public void startDiscoveryProcess() {
-		localDevice.getNetwork().startDiscoveryProcess();
-	}
-	
-	/**
-	 * Returns whether the device discovery process is running or not.
-	 * 
-	 * @return {@code true} if device discovery process is running, 
-	 *         {@code false} otherwise.
-	 */
-	public boolean isDiscoveryRunning() {
-		return localDevice.getNetwork().isDiscoveryRunning();
-	}
-	
-	/**
-	 * Saves changes to flash.
-	 * 
-	 * @throws XBeeException if there is a timeout or
-	 *                          any other error during the operation.
-	 */
-	public void saveChanges() throws XBeeException {
-		localDevice.writeChanges();
-	}
-	
+
 	/**
 	 * Subscribes the given listener to the list of listeners that will be
 	 * notified when XBee data packets are received.
