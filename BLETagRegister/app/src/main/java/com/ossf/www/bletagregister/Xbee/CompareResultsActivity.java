@@ -5,16 +5,21 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.ossf.www.bletagregister.BLEdevice;
 import com.ossf.www.bletagregister.R;
 
 import java.util.ArrayList;
+import java.util.Map;
+
+import static com.ossf.www.bletagregister.HomeActivity.listview;
+import static com.ossf.www.bletagregister.HomeActivity.regDevice_list;
 
 public class CompareResultsActivity extends AppCompatActivity {
 
     private ArrayAdapter<String> MacAddressAdapter;
     private ListView macAddrList;
     private ArrayList<String> mac_addresses;
-
+    BLEdevice device;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,10 +29,14 @@ public class CompareResultsActivity extends AppCompatActivity {
 
         MacAddressAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
         macAddrList.setAdapter(MacAddressAdapter);
-
-        mac_addresses = XBeePacketDetailsActivity.MAC_Addresses;
-        for(int i=0; i < mac_addresses.size(); i++) {
-            MacAddressAdapter.add(mac_addresses.get(i));
+        int i=0;
+        for (Map.Entry<String, BLEdevice> entry : regDevice_list.entrySet()) {
+            if(listview.isItemChecked(i)) {
+                device = entry.getValue();
+                MacAddressAdapter.add("MAC: " + device.getMac() + "\nname: " + device.getName() + "\nis Found: " + device.deviceIsFound());
+            }
+            i++;
         }
+
     }
 }

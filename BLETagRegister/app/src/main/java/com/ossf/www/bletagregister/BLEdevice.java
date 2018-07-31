@@ -35,4 +35,5 @@ public class BLEdevice {
     public String getName(){ return name; }
     public String getMac(){ return mac; }
     public String getRegName(){ return reg_name; }
+    public Boolean deviceIsFound(){ return isFound; }
 }

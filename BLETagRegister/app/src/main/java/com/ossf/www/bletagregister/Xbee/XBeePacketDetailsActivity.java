@@ -71,18 +71,16 @@ public class XBeePacketDetailsActivity extends AppCompatActivity {
         resetAllFound();
         for (int i=0; i<MAC_Addresses.size(); i++) {
             mac=MAC_Addresses.get(i);
-            Toast.makeText(XBeePacketDetailsActivity.this,mac,Toast.LENGTH_SHORT);
             device=regDevice_list.get(mac);
             if(device!=null){
                 device.Found();
             }
         }
-        //        startActivity(new Intent(this, CompareResultsActivity.class));
+        startActivity(new Intent(this, CompareResultsActivity.class));
     }
     private void resetAllFound(){
         for (Map.Entry<String, BLEdevice> entry : regDevice_list.entrySet()) {
-            BLEdevice device = entry.getValue();
-            device.resetFound();
+            entry.getValue().resetFound();
         }
     }
 
