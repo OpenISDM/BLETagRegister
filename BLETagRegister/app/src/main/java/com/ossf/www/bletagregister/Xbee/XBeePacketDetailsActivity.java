@@ -19,7 +19,7 @@ public class XBeePacketDetailsActivity extends AppCompatActivity {
     private TextView packetDataText;
 
     private String data;
-    private ArrayList<String> addresses;
+    private ArrayList<String> MAC_Addresses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,7 @@ public class XBeePacketDetailsActivity extends AppCompatActivity {
         String[] item = data.split(";");
         for(int i = 0; i < item.length; i++) {
             String[] property = item[i].split(",");
-            addresses.add(property[0]);
+            MAC_Addresses.add(property[0]);
         }
     }
 }
