@@ -31,7 +31,10 @@
         </activity>
         <activity android:name=".BlueToothScanActivity" />
         <activity android:name=".Xbee.XbeeConnectActivity" />
-        <activity android:name=".Xbee.XBeeReceivedPacketsActivity"></activity>
+        <activity
+            android:name=".Xbee.XBeeReceivedPacketsActivity"
+            android:label="@string/frames_fragment_title" />
+        <activity android:name=".Xbee.XBeePacketDetailsActivity" />
     </application>
 
 </manifest>

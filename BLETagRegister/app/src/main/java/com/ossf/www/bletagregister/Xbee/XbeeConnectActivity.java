@@ -1,7 +1,6 @@
 package com.ossf.www.bletagregister.Xbee;
 
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -9,9 +8,9 @@ import android.widget.Toast;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.ossf.www.bletagregister.BLETagRegisterApplication;
 import com.ossf.www.bletagregister.R;
+import com.ossf.www.bletagregister.Xbee.internal.XBeeConstants;
 import com.ossf.www.bletagregister.Xbee.managers.XBeeManager;
 
-import java.io.Serializable;
 
 public class XbeeConnectActivity extends AppCompatActivity {
 
@@ -23,6 +22,7 @@ public class XbeeConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xbee_connect);
 
+        // Get Xbee manager
         xbeeManager = BLETagRegisterApplication.getInstance().getXBeeManager();
     }
 
@@ -43,13 +43,12 @@ public class XbeeConnectActivity extends AppCompatActivity {
             public void run() {
                 connecting = true;
                 try {
-                    // Open device connection
                     xbeeManager.openConnection();
-
-                    Intent intent = new Intent(XbeeConnectActivity.this, XBeeReceivedPacketsActivity.class);
-                    startActivity(intent);
-
+                    
+                    startActivity(new Intent(XbeeConnectActivity.this, XBeeReceivedPacketsActivity.class));
                     showToastMessage("Device open: " + xbeeManager.getLocalXBeeDevice().toString());
+                    finish();
+
                 } catch (XBeeException e) {
                     showToastMessage("Could not open device: " + e.getMessage());
                 }

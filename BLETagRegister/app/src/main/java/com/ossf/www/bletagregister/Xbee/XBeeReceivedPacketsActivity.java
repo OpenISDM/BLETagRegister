@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.ossf.www.bletagregister.BLETagRegisterApplication;
 import com.ossf.www.bletagregister.R;
 import com.ossf.www.bletagregister.Xbee.internal.ReceivedXBeePacketsAdapter;
+import com.ossf.www.bletagregister.Xbee.internal.XBeeConstants;
 import com.ossf.www.bletagregister.Xbee.models.AbstractReceivedPacket;
 import com.ossf.www.bletagregister.Xbee.models.ReceivedDataPacket;
 import com.ossf.www.bletagregister.Xbee.models.ReceivedIOSamplePacket;
@@ -35,35 +36,12 @@ import java.util.ArrayList;
 public class XBeeReceivedPacketsActivity extends AppCompatActivity
         implements IDataReceiveListener, IIOSampleReceiveListener, IModemStatusReceiveListener {
 
-    // Constants.
-    protected static final int ACTION_CLEAR_ERROR_MESSAGE = 0;
-    protected static final int ACTION_SET_ERROR_MESSAGE = 1;
-    protected static final int ACTION_SET_SUCCESS_MESSAGE = 2;
-    protected static final int ACTION_SHOW_READ_PROGRESS_DIALOG = 3;
-    protected static final int ACTION_SHOW_WRITE_PROGRESS_DIALOG = 4;
-    protected static final int ACTION_SHOW_DISCOVER_PROGRESS_DIALOG = 5;
-    protected static final int ACTION_SHOW_SEND_PROGRESS_DIALOG = 6;
-    protected static final int ACTION_HIDE_PROGRESS_DIALOG = 7;
-    protected static final int ACTION_UPDATE_LIST_VIEW = 8;
-    protected static final int ACTION_UPDATE_LIST_TEXT = 9;
-    protected static final int ACTION_ENABLE_PARAMETERS_BUTTONS = 10;
-    protected static final int ACTION_DISABLE_PARAMETERS_BUTTONS = 11;
-    protected static final int ACTION_CLEAR_VALUES = 12;
-    protected static final int ACTION_ENABLE_DISCOVER_BUTTONS = 13;
-    protected static final int ACTION_DISABLE_DISCOVER_BUTTONS = 14;
-    protected static final int ACTION_ADD_PACKET_TO_LIST = 15;
-    protected static final int ACTION_ADD_DEVICE_TO_LIST = 16;
-
     // Variables.
     protected XBeeManager xbeeManager;
     private ArrayList<AbstractReceivedPacket> receivedPackets;
     private ReceivedXBeePacketsAdapter receivedPacketsAdapter;
 
     private TextView receivedPacketsText;
-    private TextView dateText;
-    private TextView typeText;
-    private TextView sourceAddressText;
-    private TextView packetDataText;
 
     private final Object receivedPacketsLock = new Object();
 
@@ -73,13 +51,10 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.xbee_received_data);
+        setContentView(R.layout.activity_xbee_received_packets);
 
-        // xbeeManager = XbeeConnectActivity.xbeeManager;
-        // xbeeManager = (XBeeManager) getIntent().getSerializableExtra("XBeeManager");
+        // set up XBee manager
         xbeeManager = BLETagRegisterApplication.getInstance().getXBeeManager();
-        TextView XBeeMacAddress = (TextView)findViewById(R.id.xbee_mac_address);
-        XBeeMacAddress.setText(xbeeManager.getLocalXBeeDevice().get64BitAddress().toString());
 
         // Check if we have to initialize the received packets variables.
         if (receivedPackets == null) {
@@ -87,35 +62,8 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
             receivedPacketsAdapter = new ReceivedXBeePacketsAdapter(this, receivedPackets);
         }
 
-        // Initialize all required UI elements.
-        // XBee packet list.
-        ListView receivedPacketsList = (ListView)findViewById(R.id.received_packets_list);
-        receivedPacketsList.setAdapter(receivedPacketsAdapter);
-        receivedPacketsList.setOnItemClickListener(new OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                receivedPacketsAdapter.setSelection(i);
-                updateListView();
-                handlePacketSelected(receivedPackets.get(i));
-            }
-        });
-
-        // Buttons.
-        Button clearButton = (Button)findViewById(R.id.clear_button);
-        clearButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleClearButtonPressed();
-            }
-        });
-
-        // Texts.
-        receivedPacketsText = (TextView)findViewById(R.id.received_packets_text);
-        dateText = (TextView)findViewById(R.id.date_text);
-        typeText = (TextView)findViewById(R.id.packet_type_text);
-        sourceAddressText = (TextView)findViewById(R.id.source_address_text);
-        packetDataText = (TextView)findViewById(R.id.packet_data_text);
+        // Initialize all required UI components.
+        InitializeUIComponents();
 
         // Render initial remote devices list.
         updateListView();
@@ -138,23 +86,17 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
                 return;
 
             switch (msg.what) {
-                case ACTION_UPDATE_LIST_VIEW:
+                case XBeeConstants.ACTION_UPDATE_LIST_VIEW:
                     recPacketsFragment.receivedPacketsAdapter.notifyDataSetChanged();
-                    sendEmptyMessage(ACTION_UPDATE_LIST_TEXT);
+                    sendEmptyMessage(XBeeConstants.ACTION_UPDATE_LIST_TEXT);
                     break;
-                case ACTION_UPDATE_LIST_TEXT:
+                case XBeeConstants.ACTION_UPDATE_LIST_TEXT:
                     recPacketsFragment.receivedPacketsText.setText(
                             String.format("%s %s",
                                     recPacketsFragment.receivedPackets.size(),
                                     recPacketsFragment.getResources().getString(R.string.packets_received)));
                     break;
-                case ACTION_CLEAR_VALUES:
-                    recPacketsFragment.dateText.setText("");
-                    recPacketsFragment.typeText.setText("");
-                    recPacketsFragment.sourceAddressText.setText("");
-                    recPacketsFragment.packetDataText.setText("");
-                    break;
-                case ACTION_ADD_PACKET_TO_LIST:
+                case XBeeConstants.ACTION_ADD_PACKET_TO_LIST:
                     synchronized (recPacketsFragment.receivedPacketsLock) {
                         recPacketsFragment.receivedPackets.add(0, (AbstractReceivedPacket)msg.obj);
                         recPacketsFragment.updateListView();
@@ -190,6 +132,9 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
         xbeeManager.unsubscribeDataPacketListener(this);
         xbeeManager.unsubscribeIOPacketListener(this);
         xbeeManager.unsubscribeModemStatusPacketListener(this);
+
+        // Disconnect the device.
+        xbeeManager.closeConnection();
     }
 
     @Override
@@ -210,11 +155,41 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
         addPacketToList(p);
     }
 
+    public void InitializeUIComponents() {
+        // XBee device mac address.
+        TextView XBeeMacAddressText = (TextView)findViewById(R.id.xbee_mac_address_text);
+        XBeeMacAddressText.setText(xbeeManager.getLocalXBee64BitAddress().toString());
+
+        // XBee packet list.
+        ListView receivedPacketsList = (ListView)findViewById(R.id.received_packets_list);
+        receivedPacketsList.setAdapter(receivedPacketsAdapter);
+        receivedPacketsList.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                receivedPacketsAdapter.setSelection(i);
+                updateListView();
+                handlePacketSelected(receivedPackets.get(i));
+            }
+        });
+
+        // Buttons.
+        Button clearButton = (Button)findViewById(R.id.clear_button);
+        clearButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleClearButtonPressed();
+            }
+        });
+
+        // Texts.
+        receivedPacketsText = (TextView)findViewById(R.id.received_packets_text);
+    }
+
     /**
      * Updates the list view.
      */
     public void updateListView() {
-        handler.sendEmptyMessage(ACTION_UPDATE_LIST_VIEW);
+        handler.sendEmptyMessage(XBeeConstants.ACTION_UPDATE_LIST_VIEW);
     }
 
 
@@ -225,15 +200,22 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
      */
     private void handlePacketSelected(AbstractReceivedPacket selectedPacket) {
         if (selectedPacket == null) {
-            clearValues();
             return;
         }
-        dateText.setText(selectedPacket.getDateAndTimeString());
-        typeText.setText(String.format("%s %s",
+
+        // Create bundle for packet details.
+        Bundle bundle = new Bundle();
+        bundle.putString("date", selectedPacket.getDateAndTimeString());
+        bundle.putString("type", String.format("%s %s",
                 selectedPacket.getType().getName(),
                 getResources().getString(R.string.packet_suffix)));
-        sourceAddressText.setText(selectedPacket.getSourceAddress().toString());
-        packetDataText.setText(selectedPacket.getPacketData());
+        bundle.putString("sourceAddress", selectedPacket.getSourceAddress().toString());
+        bundle.putString("packetData", selectedPacket.getPacketData());
+
+        // Start activity and pass over bundle.
+        Intent intent = new Intent(this, XBeePacketDetailsActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     /**
@@ -244,14 +226,6 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
             receivedPackets.clear();
         }
         updateListView();
-        handlePacketSelected(null);
-    }
-
-    /**
-     * Clears the text values.
-     */
-    private void clearValues() {
-        handler.sendEmptyMessage(ACTION_CLEAR_VALUES);
     }
 
     /**
@@ -260,7 +234,7 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
      * @param receivedPacket Packet to add to the list.
      */
     private void addPacketToList(AbstractReceivedPacket receivedPacket) {
-        Message msg = handler.obtainMessage(ACTION_ADD_PACKET_TO_LIST);
+        Message msg = handler.obtainMessage(XBeeConstants.ACTION_ADD_PACKET_TO_LIST);
         msg.obj = receivedPacket;
         handler.sendMessage(msg);
     }
