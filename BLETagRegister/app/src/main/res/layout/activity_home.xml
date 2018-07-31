@@ -10,18 +10,27 @@
         android:id="@+id/AddBLEButton"
         android:layout_width="150dp"
         android:layout_height="50dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Add BLE"
-        android:onClick="onAddBLE"/>
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/ConnectXbeeButton"
+        android:layout_marginEnd="29dp"
+        android:onClick="onAddBLE"
+        android:text="Add BLE" />
 
     <Button
         android:id="@+id/ConnectXbeeButton"
         android:layout_width="150dp"
         android:layout_height="50dp"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="17dp"
+        android:onClick="onConnectXbee"
+        android:text="Connect Xbee" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="461dp"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/AddBLEButton"
-        android:text="Connect Xbee"
-        android:onClick="onConnectXbee"/>
+        android:id="@+id/lv_regDevice"/>
 
 </RelativeLayout>
