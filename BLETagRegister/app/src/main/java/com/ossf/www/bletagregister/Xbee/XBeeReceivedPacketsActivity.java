@@ -63,7 +63,7 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
         }
 
         // Initialize all required UI components.
-        InitializeUIComponents();
+        initializeUIComponents();
 
         // Render initial remote devices list.
         updateListView();
@@ -155,7 +155,7 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
         addPacketToList(p);
     }
 
-    public void InitializeUIComponents() {
+    private void initializeUIComponents() {
         // XBee device mac address.
         TextView XBeeMacAddressText = (TextView)findViewById(R.id.xbee_mac_address_text);
         XBeeMacAddressText.setText(xbeeManager.getLocalXBee64BitAddress().toString());
