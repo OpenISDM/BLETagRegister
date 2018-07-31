@@ -3,13 +3,22 @@ package com.ossf.www.bletagregister.Xbee;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.ossf.www.bletagregister.BLEdevice;
 import com.ossf.www.bletagregister.R;
 
 import java.util.ArrayList;
+import java.util.Map;
+
+import static com.ossf.www.bletagregister.HomeActivity.DevicesArrayAdapter;
+import static com.ossf.www.bletagregister.HomeActivity.listview;
+import static com.ossf.www.bletagregister.HomeActivity.regDevice_list;
 
 public class XBeePacketDetailsActivity extends AppCompatActivity {
 
@@ -26,9 +35,7 @@ public class XBeePacketDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xbee_packet_details);
-
         MAC_Addresses = new ArrayList<String>();
-
         initializeUIComponents();
     }
 
@@ -59,8 +66,23 @@ public class XBeePacketDetailsActivity extends AppCompatActivity {
 
     private void handleCompareButtonPressed() {
         parseData(data);
-        startActivity(new Intent(this, CompareResultsActivity.class));
+        resetAllFound();
 
+        BLEdevice device;
+        for (int i = 0; i < MAC_Addresses.size(); i++) {
+            device = regDevice_list.get( MAC_Addresses.get(i) );
+            if(device != null) {
+                device.Found();
+            }
+        }
+
+        startActivity(new Intent(this, CompareResultsActivity.class));
+    }
+
+    private void resetAllFound(){
+        for (Map.Entry<String, BLEdevice> entry : regDevice_list.entrySet()) {
+            entry.getValue().resetFound();
+        }
     }
 
     private void parseData(String data) {

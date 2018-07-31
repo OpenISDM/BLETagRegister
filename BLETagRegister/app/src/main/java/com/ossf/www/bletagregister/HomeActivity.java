@@ -22,8 +22,8 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
     public static Map<String, BLEdevice> regDevice_list;
-    private ListView listview;
-    private static ArrayAdapter<String> DevicesArrayAdapter;
+    public static ListView listview;
+    public static ArrayAdapter<String> DevicesArrayAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

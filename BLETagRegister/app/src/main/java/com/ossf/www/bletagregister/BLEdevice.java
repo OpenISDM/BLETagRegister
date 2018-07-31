@@ -6,6 +6,7 @@ public class BLEdevice {
     private String mac;
     private String reg_name;
     boolean isReg;
+    boolean isFound;
     //copy constructor
     public BLEdevice(BLEdevice copyDevice){
         this(copyDevice.getName(),copyDevice.getMac(),copyDevice.getRssi());
@@ -16,6 +17,7 @@ public class BLEdevice {
         mac=m;
         reg_name=rn;
         isReg=true;
+        isFound=false;
     }
     public BLEdevice(String n,String m,int r){
         rssi=r;
@@ -23,11 +25,15 @@ public class BLEdevice {
         mac=m;
         reg_name=null;
         isReg=false;
+        isFound=false;
     }
     public void register(String n){ reg_name=n; }
     public void setRssi(int r){ rssi=r; }
+    public void Found(){ isFound=true; }
+    public void resetFound(){ isFound=false; }
     public int getRssi(){ return rssi; }
     public String getName(){ return name; }
     public String getMac(){ return mac; }
     public String getRegName(){ return reg_name; }
+    public Boolean deviceIsFound(){ return isFound; }
 }
