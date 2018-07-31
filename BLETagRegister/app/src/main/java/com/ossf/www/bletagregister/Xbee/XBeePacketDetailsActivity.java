@@ -1,5 +1,6 @@
 package com.ossf.www.bletagregister.Xbee;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,12 +29,13 @@ public class XBeePacketDetailsActivity extends AppCompatActivity {
     private TextView packetDataText;
 
     private String data;
-    private ArrayList<String> MAC_Addresses;
+    public static ArrayList<String> MAC_Addresses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xbee_packet_details);
+        MAC_Addresses = new ArrayList<String>();
         initializeUIComponents();
     }
 
@@ -75,6 +77,7 @@ public class XBeePacketDetailsActivity extends AppCompatActivity {
                 device.Found();
             }
         }
+        //        startActivity(new Intent(this, CompareResultsActivity.class));
     }
     private void resetAllFound(){
         for (Map.Entry<String, BLEdevice> entry : regDevice_list.entrySet()) {
