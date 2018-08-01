@@ -3,12 +3,9 @@ package com.ossf.www.bletagregister.Xbee;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ossf.www.bletagregister.BLEdevice;
 import com.ossf.www.bletagregister.R;
@@ -16,8 +13,6 @@ import com.ossf.www.bletagregister.R;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static com.ossf.www.bletagregister.HomeActivity.DevicesArrayAdapter;
-import static com.ossf.www.bletagregister.HomeActivity.listview;
 import static com.ossf.www.bletagregister.HomeActivity.regDevice_list;
 
 public class XBeePacketDetailsActivity extends AppCompatActivity {

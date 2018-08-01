@@ -23,8 +23,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="17dp"
-        android:onClick="onConnectXbee"
-        android:text="Connect Xbee" />
+        android:onClick="onReceiveXBeeData"
+        android:text="Receive Data" />
 
     <ListView
         android:layout_width="match_parent"

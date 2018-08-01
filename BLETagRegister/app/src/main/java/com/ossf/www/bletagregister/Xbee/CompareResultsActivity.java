@@ -8,7 +8,6 @@ import android.widget.ListView;
 import com.ossf.www.bletagregister.BLEdevice;
 import com.ossf.www.bletagregister.R;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import static com.ossf.www.bletagregister.HomeActivity.listview;
@@ -33,7 +32,7 @@ public class CompareResultsActivity extends AppCompatActivity {
         for (Map.Entry<String, BLEdevice> entry : regDevice_list.entrySet()) {
             if(listview.isItemChecked(i)) {
                 device = entry.getValue();
-                adapter.add("MAC: " + device.getMac() + "\nname: " + device.getName() + "\nis Found: " + device.deviceIsFound());
+                adapter.add("name: " + device.getRegName() + "\nMAC: " + device.getMac() + "\nis Found: " + device.deviceIsFound());
             }
             i++;
         }

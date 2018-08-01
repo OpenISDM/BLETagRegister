@@ -12,8 +12,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import com.ossf.www.bletagregister.Xbee.XbeeConnectActivity;
+import com.digi.xbee.api.exceptions.XBeeException;
+import com.ossf.www.bletagregister.Xbee.XBeeReceivedPacketsActivity;
+import com.ossf.www.bletagregister.Xbee.internal.XBeeConstants;
 import com.ossf.www.bletagregister.Xbee.managers.XBeeManager;
 
 import java.io.IOException;
@@ -21,15 +24,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
+
     public static Map<String, BLEdevice> regDevice_list;
     public static ListView listview;
     public static ArrayAdapter<String> DevicesArrayAdapter;
+    private XBeeManager xbeeManager;
+    private boolean connecting = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         requestPermission(); //權限要求
         regDevice_list=new HashMap<String, BLEdevice>();
+
+        // Get Xbee manager
+        xbeeManager = BLETagRegisterApplication.getInstance().getXBeeManager();
+        // Instantiate the XBeeDevice object.
+        xbeeManager.createXBeeDevice(XBeeConstants.BAUDRATE);
+
         // initiallize xml
         listview=(ListView)findViewById(R.id.lv_regDevice);
         listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -50,6 +66,34 @@ public class HomeActivity extends AppCompatActivity {
         getRegList();
         listInitiallize();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Avoid accesses while connecting. Check connection status.
+        if (connecting || xbeeManager.getLocalXBeeDevice().isOpen())
+            return;
+
+        // Create the connection thread.
+        Thread connectThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                connecting = true;
+                try {
+                    // Open device connection
+                    xbeeManager.openConnection();
+                    showToastMessage("Device open: " + xbeeManager.getLocalXBeeDevice().toString());
+                } catch (XBeeException e) {
+                    showToastMessage("Could not open device: " + e.getMessage());
+                }
+                connecting = false;
+            }
+        });
+        connectThread.start();
+
+    }
+
     // 將 ble.txt資料丟進regDevice_list裡面
     public void getRegList(){
         regDevice_list.clear();
@@ -61,6 +105,7 @@ public class HomeActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
     //list refresh
     public static void listInitiallize(){
         DevicesArrayAdapter.clear();
@@ -96,9 +141,28 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void onConnectXbee(View view) {
-        Intent intent = new Intent(this, XbeeConnectActivity.class);
-        startActivity(intent);
+    public void onReceiveXBeeData(View view) {
+        if(xbeeManager.getLocalXBeeDevice().isOpen()) {
+            Intent intent = new Intent(this, XBeeReceivedPacketsActivity.class);
+            startActivity(intent);
+        }
+        else {
+            showToastMessage("XBee is not connected. Please connect XBee and restart the app.");
+        }
+    }
+
+    /**
+     * Displays the given message.
+     *
+     * @param message The message to show.
+     */
+    private void showToastMessage(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(HomeActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 }
