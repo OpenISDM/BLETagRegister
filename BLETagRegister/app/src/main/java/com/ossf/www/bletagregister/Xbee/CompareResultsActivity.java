@@ -21,6 +21,7 @@ public class CompareResultsActivity extends AppCompatActivity {
     private ArrayAdapter<String> MacAddressAdapter;
     private ListView macAddrList;
     BLEdevice device;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -66,18 +66,19 @@ public class XBeePacketDetailsActivity extends AppCompatActivity {
 
     private void handleCompareButtonPressed() {
         parseData(data);
-        String mac;
-        BLEdevice device;
         resetAllFound();
-        for (int i=0; i<MAC_Addresses.size(); i++) {
-            mac=MAC_Addresses.get(i);
-            device=regDevice_list.get(mac);
-            if(device!=null){
+
+        BLEdevice device;
+        for (int i = 0; i < MAC_Addresses.size(); i++) {
+            device = regDevice_list.get( MAC_Addresses.get(i) );
+            if(device != null) {
                 device.Found();
             }
         }
+
         startActivity(new Intent(this, CompareResultsActivity.class));
     }
+
     private void resetAllFound(){
         for (Map.Entry<String, BLEdevice> entry : regDevice_list.entrySet()) {
             entry.getValue().resetFound();
