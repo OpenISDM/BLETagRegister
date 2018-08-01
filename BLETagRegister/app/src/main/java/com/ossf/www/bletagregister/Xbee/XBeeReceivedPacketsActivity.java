@@ -1,3 +1,28 @@
+/*
+    Activity : XBeeReceivedPacketsActivity
+
+    Description :
+        Starts XBee packet listeners and shows received packets in list view.
+
+    Author : Tiffany Chiang, modified from Digi International Inc.
+    Date : 2018.08.01
+
+ * Copyright 2017, Digi International Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, you can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+
 package com.ossf.www.bletagregister.Xbee;
 
 import android.content.Intent;
@@ -16,7 +41,6 @@ import android.widget.TextView;
 import com.ossf.www.bletagregister.BLETagRegisterApplication;
 import com.ossf.www.bletagregister.R;
 import com.ossf.www.bletagregister.Xbee.internal.ReceivedXBeePacketsAdapter;
-import com.ossf.www.bletagregister.Xbee.internal.XBeeConstants;
 import com.ossf.www.bletagregister.Xbee.models.AbstractReceivedPacket;
 import com.ossf.www.bletagregister.Xbee.models.ReceivedDataPacket;
 import com.ossf.www.bletagregister.Xbee.models.ReceivedIOSamplePacket;
@@ -36,8 +60,14 @@ import java.util.ArrayList;
 public class XBeeReceivedPacketsActivity extends AppCompatActivity
         implements IDataReceiveListener, IIOSampleReceiveListener, IModemStatusReceiveListener {
 
+    // Constants.
+    public static final int ACTION_UPDATE_LIST_VIEW = 1;
+    public static final int ACTION_UPDATE_LIST_TEXT = 2;
+    public static final int ACTION_ADD_PACKET_TO_LIST = 3;
+
     // Variables.
     protected XBeeManager xbeeManager;
+
     private ArrayList<AbstractReceivedPacket> receivedPackets;
     private ReceivedXBeePacketsAdapter receivedPacketsAdapter;
 
@@ -63,9 +93,9 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
         }
 
         // Initialize all required UI components.
-        initializeUIComponents();
+        initializeXml();
 
-        // Render initial remote devices list.
+        // Render packets list view.
         updateListView();
     }
 
@@ -86,17 +116,17 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
                 return;
 
             switch (msg.what) {
-                case XBeeConstants.ACTION_UPDATE_LIST_VIEW:
+                case ACTION_UPDATE_LIST_VIEW:
                     recPacketsFragment.receivedPacketsAdapter.notifyDataSetChanged();
-                    sendEmptyMessage(XBeeConstants.ACTION_UPDATE_LIST_TEXT);
+                    sendEmptyMessage(ACTION_UPDATE_LIST_TEXT);
                     break;
-                case XBeeConstants.ACTION_UPDATE_LIST_TEXT:
+                case ACTION_UPDATE_LIST_TEXT:
                     recPacketsFragment.receivedPacketsText.setText(
                             String.format("%s %s",
                                     recPacketsFragment.receivedPackets.size(),
                                     recPacketsFragment.getResources().getString(R.string.packets_received)));
                     break;
-                case XBeeConstants.ACTION_ADD_PACKET_TO_LIST:
+                case ACTION_ADD_PACKET_TO_LIST:
                     synchronized (recPacketsFragment.receivedPacketsLock) {
                         recPacketsFragment.receivedPackets.add(0, (AbstractReceivedPacket)msg.obj);
                         recPacketsFragment.updateListView();
@@ -152,7 +182,10 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
         addPacketToList(p);
     }
 
-    private void initializeUIComponents() {
+    /**
+     * Initializes all the required graphic UI elements of this activity.
+     */
+     private void initializeXml() {
         // XBee device mac address.
         TextView XBeeMacAddressText = (TextView)findViewById(R.id.xbee_mac_address_text);
         XBeeMacAddressText.setText(xbeeManager.getLocalXBee64BitAddress().toString());
@@ -186,9 +219,8 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
      * Updates the list view.
      */
     public void updateListView() {
-        handler.sendEmptyMessage(XBeeConstants.ACTION_UPDATE_LIST_VIEW);
+        handler.sendEmptyMessage(ACTION_UPDATE_LIST_VIEW);
     }
-
 
     /**
      * Handles what happens when a received packet is selected from the list.
@@ -231,7 +263,7 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
      * @param receivedPacket Packet to add to the list.
      */
     private void addPacketToList(AbstractReceivedPacket receivedPacket) {
-        Message msg = handler.obtainMessage(XBeeConstants.ACTION_ADD_PACKET_TO_LIST);
+        Message msg = handler.obtainMessage(ACTION_ADD_PACKET_TO_LIST);
         msg.obj = receivedPacket;
         handler.sendMessage(msg);
     }

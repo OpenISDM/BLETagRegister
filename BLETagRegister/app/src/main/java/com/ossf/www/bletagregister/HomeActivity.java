@@ -27,7 +27,6 @@ import android.widget.Toast;
 
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.ossf.www.bletagregister.Xbee.XBeeReceivedPacketsActivity;
-import com.ossf.www.bletagregister.Xbee.internal.XBeeConstants;
 import com.ossf.www.bletagregister.Xbee.managers.XBeeManager;
 
 import java.io.IOException;
@@ -37,10 +36,13 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
+    // Constant
+    public final static int BAUDRATE = 9600;
+
     // Variable: this map contains all registered device.
     public static Map<String, BLEdevice> regDevice_list;
 
-    public static ListView listview;
+    public static ListView regDeviceListView;
     public static ArrayAdapter<String> DevicesArrayAdapter;
 
     private XBeeManager xbeeManager;
@@ -59,9 +61,9 @@ public class HomeActivity extends AppCompatActivity {
         initializeXml();
 
         getRegList();
+
         initializeList();
     }
-
 
     @Override
     protected void onResume() {
@@ -91,7 +93,6 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-
     public void requestPermission(){
         // Write external storage enabled.
         if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -114,36 +115,33 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-
     private void connectXBee() {
         // Get Xbee manager.
         xbeeManager = BLETagRegisterApplication.getInstance().getXBeeManager();
 
         // Instantiate the XBeeDevice object.
-        xbeeManager.createXBeeDevice(XBeeConstants.BAUDRATE);
+        xbeeManager.createXBeeDevice(BAUDRATE);
     }
-
 
     private void initializeXml(){
         regDevice_list=new HashMap<String, BLEdevice>();
-        listview=(ListView)findViewById(R.id.lv_regDevice);
-        listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        regDeviceListView = (ListView)findViewById(R.id.reg_device_list);
+        regDeviceListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        regDeviceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 DevicesArrayAdapter.notifyDataSetChanged();
                 // checkbox controller
-                if(!listview.isItemChecked(i)) {
-                    listview.setItemChecked(i,false);
+                if(!regDeviceListView.isItemChecked(i)) {
+                    regDeviceListView.setItemChecked(i,false);
                 }else{
-                    listview.setItemChecked(i,true);
+                    regDeviceListView.setItemChecked(i,true);
                 }
             }
         });
         DevicesArrayAdapter= new ArrayAdapter<String>(this,android.R.layout.simple_list_item_multiple_choice);
-        listview.setAdapter(DevicesArrayAdapter);
+        regDeviceListView.setAdapter(DevicesArrayAdapter);
     }
-
 
     // Get all registered device.
     public void getRegList(){
@@ -157,7 +155,6 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-
     // Refresh registered device list.
     public static void initializeList(){
         DevicesArrayAdapter.clear();
@@ -167,13 +164,11 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-
     // Handles button "Add BLE" pressed.
     public void onAddBLE(View view) {
         Intent intent = new Intent(this, BlueToothScanActivity.class);
         startActivity(intent);
     }
-
 
     // Handles button "Receive Data" pressed.
     public void onReceiveXBeeData(View view) {
@@ -186,7 +181,6 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-
     // Displays the given message.
     private void showToastMessage(final String message) {
         runOnUiThread(new Runnable() {
@@ -196,5 +190,4 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
-
 }

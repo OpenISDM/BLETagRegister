@@ -18,7 +18,6 @@ package com.ossf.www.bletagregister.Xbee.models;
 
 import com.digi.xbee.api.models.XBee64BitAddress;
 
-import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 

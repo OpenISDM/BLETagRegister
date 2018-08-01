@@ -1,3 +1,14 @@
+/*
+    Activity : XBeePacketDetailsActivity
+
+    Description :
+        Shows details of the received packet (Date, Type, Source address, Packet data).
+        Compares the MAC addresses in the received data to those of the checked devices in the HomeActivity.
+
+    Author : Cynthia Wu, Tiffany Chiang
+    Date : 2018.08.01
+*/
+
 package com.ossf.www.bletagregister.Xbee;
 
 import android.content.Intent;
@@ -30,11 +41,15 @@ public class XBeePacketDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xbee_packet_details);
+
         MAC_Addresses = new ArrayList<String>();
-        initializeUIComponents();
+
+        // Initialize all required UI components.
+        initializeXml();
     }
 
-    private void initializeUIComponents() {
+    private void initializeXml() {
+        // Get packet details from bundle.
         Bundle bundle = this.getIntent().getExtras();
 
         // Texts.
@@ -60,9 +75,14 @@ public class XBeePacketDetailsActivity extends AppCompatActivity {
     }
 
     private void handleCompareButtonPressed() {
+
+        // Parse data to get valid MAC address from received packet data.
         parseData(data);
+
+        // Reset the "Found" parameter for all registered device as "false".
         resetAllFound();
 
+        // Check if each received MAC address maps to a registered BLE device.
         BLEdevice device;
         for (int i = 0; i < MAC_Addresses.size(); i++) {
             device = regDevice_list.get( MAC_Addresses.get(i) );
@@ -71,20 +91,23 @@ public class XBeePacketDetailsActivity extends AppCompatActivity {
             }
         }
 
-        startActivity(new Intent(this, CompareResultsActivity.class));
+        // Shows comparison result in CompareResultActivity
+        startActivity(new Intent(this, CompareResultActivity.class));
+    }
+
+    private void parseData(String data) {
+        // Received packet data should have the form of:
+        // __MACADDR[0]__,__PROP1__,__PROP2__;__MACADDR[1]__,__PROP1__,__PROP2__;
+        String[] item = data.split(";");
+        for(int i = 0; i < item.length; i++) {
+            String[] property = item[i].split(",");
+            MAC_Addresses.add(property[0]);
+        }
     }
 
     private void resetAllFound(){
         for (Map.Entry<String, BLEdevice> entry : regDevice_list.entrySet()) {
             entry.getValue().resetFound();
-        }
-    }
-
-    private void parseData(String data) {
-        String[] item = data.split(";");
-        for(int i = 0; i < item.length; i++) {
-            String[] property = item[i].split(",");
-            MAC_Addresses.add(property[0]);
         }
     }
 }

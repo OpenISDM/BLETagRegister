@@ -45,7 +45,7 @@
             android:name=".Xbee.XBeeReceivedPacketsActivity"
             android:label="@string/frames_fragment_title" />
         <activity android:name=".Xbee.XBeePacketDetailsActivity" />
-        <activity android:name=".Xbee.CompareResultsActivity"></activity>
+        <activity android:name=".Xbee.CompareResultActivity"></activity>
     </application>
 
 </manifest>
