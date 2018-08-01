@@ -2,34 +2,42 @@ package com.ossf.www.bletagregister;
 
 import android.app.Activity;
 import android.os.Environment;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import static com.ossf.www.bletagregister.HomeActivity.regDevice_list;
 
-public class FileStream extends Activity{
-    File extDir;
-    File fullFilename;
-    public FileStream() throws IOException {
+/*
+    class : FileStream
+    description : input and output string from ble.txt
+    author : Cynthia
+    date : 2018.08.01
+ */
 
+public class FileStream extends Activity{
+    File extDir; // now path
+    File fullFilename;
+
+    public FileStream() throws IOException {
+        // get connect with ble.txt
         extDir = Environment.getExternalStorageDirectory();
         String filename = "ble.txt";
         fullFilename = new File(extDir, filename);
         fullFilename.createNewFile();
         fullFilename.setWritable(Boolean.TRUE);
     }
+
+    // write data parameter into ble.txt
     public void write(String data) throws IOException {
         FileWriter fw = new FileWriter(extDir+"/ble.txt",true);
         fw.write(data);
         fw.close();
     }
+
+    // read data and put it into regDevice_list
     public void readRegList() throws IOException {
-        StringBuilder text=new StringBuilder();
         BufferedReader br = new BufferedReader(new FileReader(fullFilename));
         String line;
         while ((line = br.readLine()) != null) {

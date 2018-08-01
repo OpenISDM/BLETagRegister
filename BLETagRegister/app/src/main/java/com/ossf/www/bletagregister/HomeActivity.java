@@ -12,31 +12,41 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import com.ossf.www.bletagregister.Xbee.XbeeConnectActivity;
-import com.ossf.www.bletagregister.Xbee.managers.XBeeManager;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+    activity : HomeActivity
+    description : The main activity shows the list of all registered device.
+    author : Cynthia, Tiffany
+    date : 2018.08.01
+ */
+
 public class HomeActivity extends AppCompatActivity {
-    public static Map<String, BLEdevice> regDevice_list;
+    public static Map<String, BLEdevice> regDevice_list; // the list shows all registered device
     public static ListView listview;
     public static ArrayAdapter<String> DevicesArrayAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        requestPermission(); //權限要求
+        requestPermission();
+        initializeXml();
+        getRegList();
+        initializeList();
+    }
+
+    private void initializeXml(){
         regDevice_list=new HashMap<String, BLEdevice>();
-        // initiallize xml
         listview=(ListView)findViewById(R.id.lv_regDevice);
         listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 DevicesArrayAdapter.notifyDataSetChanged();
+                // checkbox controller
                 if(!listview.isItemChecked(i)) {
                     listview.setItemChecked(i,false);
                 }else{
@@ -46,12 +56,10 @@ public class HomeActivity extends AppCompatActivity {
         });
         DevicesArrayAdapter= new ArrayAdapter<String>(this,android.R.layout.simple_list_item_multiple_choice);
         listview.setAdapter(DevicesArrayAdapter);
-        // show list
-        getRegList();
-        listInitiallize();
     }
-    // 將 ble.txt資料丟進regDevice_list裡面
-    public void getRegList(){
+
+    // get all registered device
+    private void getRegList(){
         regDevice_list.clear();
         FileStream fs;
         try {
@@ -61,8 +69,9 @@ public class HomeActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
     //list refresh
-    public static void listInitiallize(){
+    public static void initializeList(){
         DevicesArrayAdapter.clear();
         for (Map.Entry<String, BLEdevice> entry : regDevice_list.entrySet()) {
             BLEdevice device=entry.getValue();

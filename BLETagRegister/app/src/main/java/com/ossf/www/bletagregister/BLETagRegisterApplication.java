@@ -1,7 +1,6 @@
 package com.ossf.www.bletagregister;
 
 import android.app.Application;
-
 import com.ossf.www.bletagregister.Xbee.managers.XBeeManager;
 
 

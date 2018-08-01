@@ -1,6 +1,12 @@
 package com.ossf.www.bletagregister;
-
+/*
+    class : BLEdevice
+    description : the class that records information of ble devices
+    author : Cynthia
+    date : 2018.08.01
+*/
 public class BLEdevice {
+
     private int rssi;
     private String name;
     private String mac;
@@ -36,4 +42,5 @@ public class BLEdevice {
     public String getMac(){ return mac; }
     public String getRegName(){ return reg_name; }
     public Boolean deviceIsFound(){ return isFound; }
+
 }
