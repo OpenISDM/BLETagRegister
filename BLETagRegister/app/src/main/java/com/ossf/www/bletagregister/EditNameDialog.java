@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import java.io.IOException;
-import static com.ossf.www.bletagregister.HomeActivity.listInitiallize;
+import static com.ossf.www.bletagregister.HomeActivity.initializeList;
 import static com.ossf.www.bletagregister.HomeActivity.regDevice_list;
 
 /*
@@ -68,7 +68,7 @@ public class EditNameDialog extends Dialog{
         device.isReg=true;
         device.register(name);
         regDevice_list.put(device.getMac(),device);
-        listInitiallize(); // refresh list
+        initializeList(); // refresh list
 
         // close the dialog
         this.dismiss();

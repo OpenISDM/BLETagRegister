@@ -31,7 +31,7 @@ public class CompareResultsActivity extends AppCompatActivity {
     }
 
     private void initializeXml(){
-        macAddrList = (ListView)findViewById(R.id.mac_addresses_list);
+        macAddrList = (ListView)findViewById(R.id.compare_result_listview);
         MacAddressAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
         macAddrList.setAdapter(MacAddressAdapter);
     }
