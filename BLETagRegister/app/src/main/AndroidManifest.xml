@@ -41,7 +41,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".BlueToothScanActivity" />
-        <activity android:name=".Xbee.XbeeConnectActivity" />
         <activity
             android:name=".Xbee.XBeeReceivedPacketsActivity"
             android:label="@string/frames_fragment_title" />

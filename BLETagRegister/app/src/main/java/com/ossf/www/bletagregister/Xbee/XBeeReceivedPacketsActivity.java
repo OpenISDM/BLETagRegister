@@ -132,9 +132,6 @@ public class XBeeReceivedPacketsActivity extends AppCompatActivity
         xbeeManager.unsubscribeDataPacketListener(this);
         xbeeManager.unsubscribeIOPacketListener(this);
         xbeeManager.unsubscribeModemStatusPacketListener(this);
-
-        // Disconnect the device.
-        xbeeManager.closeConnection();
     }
 
     @Override
